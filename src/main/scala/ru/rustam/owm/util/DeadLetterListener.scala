@@ -1,4 +1,4 @@
-package ru.rustam.owm
+package ru.rustam.owm.util
 
 import akka.actor.{Actor, DeadLetter}
 

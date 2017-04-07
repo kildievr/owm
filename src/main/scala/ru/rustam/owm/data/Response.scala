@@ -1,4 +1,4 @@
-package ru.rustam.owm
+package ru.rustam.owm.data
 
 trait Response[T] {
   val result: Option[T]

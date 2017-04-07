@@ -1,9 +1,10 @@
-package ru.rustam.owm
+package ru.rustam.owm.handlers
 
 import akka.actor.Actor
 import geotrellis.proj4.CRS
 import org.json4s.{DefaultFormats, Formats}
-import ru.rustam.owm.Converter.convert
+import ru.rustam.owm.data.ConversionResponse
+import ru.rustam.owm.handlers.Converter.convert
 import spray.http.StatusCodes.OK
 import spray.httpx.Json4sJacksonSupport
 import spray.routing.RequestContext
@@ -16,6 +17,8 @@ object Converter {
 }
 
 class Converter extends Actor with Json4sJacksonSupport {
+  override implicit def json4sJacksonFormats: Formats = DefaultFormats
+
   override def receive: Receive = {
     case (proj4string: String, ctx: RequestContext) =>
       try {
@@ -26,6 +29,4 @@ class Converter extends Actor with Json4sJacksonSupport {
           ctx.complete(OK, ConversionResponse(th.getMessage))
       }
   }
-
-  override implicit def json4sJacksonFormats: Formats = DefaultFormats
 }

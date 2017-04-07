@@ -4,11 +4,12 @@ import java.net.URLEncoder
 
 import akka.actor.ActorSystem
 import org.specs2.mutable.Specification
+import ru.rustam.owm.http.ApiService
 import spray.http.HttpEntity
 import spray.http.MediaTypes._
 import spray.testkit.Specs2RouteTest
 
-class CheckTest extends Specification with Specs2RouteTest with MyService {
+class Test extends Specification with Specs2RouteTest with ApiService {
 
   def actorRefFactory: ActorSystem = system
 
@@ -20,7 +21,7 @@ class CheckTest extends Specification with Specs2RouteTest with MyService {
       val y = encode("56.50833333333333")
       val proj4from = encode("+proj=longlat +datum=NAD27 +to_meter=0.3048006096012192")
       val proj4to = encode("ESRI:26732")
-      val post = Post("/coordinationsTransform", HttpEntity(`application/x-www-form-urlencoded`,
+      val post = Post("/coordinatesTransform", HttpEntity(`application/x-www-form-urlencoded`,
         s"x=$x&y=$y&proj4from=$proj4from&proj4to=$proj4to"))
       post ~> route ~> check {
         val result = responseAs[String]

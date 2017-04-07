@@ -1,15 +1,17 @@
-package ru.rustam.owm
+package ru.rustam.owm.handlers
 
 import akka.actor.Actor
 import org.json4s.{DefaultFormats, Formats}
 import org.osgeo.proj4j.{CRSFactory, CoordinateReferenceSystem, CoordinateTransformFactory, ProjCoordinate}
+import ru.rustam.owm.data.{Coordinates, TransformResponse}
+import ru.rustam.owm.handlers.Transformer.transform
 import spray.http.StatusCodes.OK
 import spray.httpx.Json4sJacksonSupport
 import spray.routing.RequestContext
 
 object Transformer {
   private val crsFactory = new CRSFactory()
-  private val ctFactory  = new CoordinateTransformFactory()
+  private val ctFactory = new CoordinateTransformFactory()
 
   def createCRS(crsSpec: String): CoordinateReferenceSystem =
     if (crsSpec.indexOf("+") >= 0 || crsSpec.indexOf("=") >= 0)
@@ -29,16 +31,16 @@ object Transformer {
 }
 
 class Transformer extends Actor with Json4sJacksonSupport {
+  override implicit def json4sJacksonFormats: Formats = DefaultFormats
+
   override def receive: Receive = {
     case (x: String, y: String, proj4from: String, proj4to: String, ctx: RequestContext) =>
       try {
-        val res = Transformer.transform(x, y, proj4from, proj4to)
+        val res = transform(x, y, proj4from, proj4to)
         ctx.complete(OK, TransformResponse(res))
       } catch {
         case th: Throwable =>
           ctx.complete(OK, TransformResponse(th.getMessage))
       }
   }
-
-  override implicit def json4sJacksonFormats: Formats = DefaultFormats
 }
