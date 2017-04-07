@@ -31,6 +31,9 @@ class Test extends Specification with Specs2RouteTest with ApiService {
     }
 
     "transform coordinates" in {
+      transform()
+    }
+    "transform coordinates with error" in {
       transform("-123.sad0", """{"error":"For input string: \"-123.sad0\""}""")
     }
 
